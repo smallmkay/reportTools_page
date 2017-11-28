@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>条件筛选</title>
+  <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
+  <link rel="stylesheet" href="./jquery-ui-themes-1.12.1/themes/base/jquery-ui.css" type="text/css" />
+  <link href="./css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./jqwidgets/styles/jqx.base.css" type="text/css" />  
+  <link rel="stylesheet" href="./jqwidgets/styles/jqx.light.css" type="text/css" />  
+  <!-- <link href="./css/queryStyle.css" rel="stylesheet">  -->
+<style>
+    html,body{
+        height:100%;
+    }
+    .container-fluid{
+        height:100%;
+    }
+    li{
+        list-style:none
+    }
+    .conditions-waiting ,.conditions-selected{
+        border:1px solid #E2E2E2;
+        padding:5px;
+        margin: 5px;
+        text-align: center;
+        border-radius:5px;
+    }
+    .badge-del , .badge-add{
+        top: -6px;
+        right: -8px;
+        height: 18px;
+        width: 18px;
+        position: absolute;
+        border-radius:50%;
+        background: #DFDEDE;
+        text-align: center;
+        font-size: xx-small;
+        z-index: 1000;
+        color: #fff;
+    }
+    .badge-name{
+        top: -9px;
+        left: -2px;
+        position: absolute;
+        text-align: center;
+        font-size: xx-small;
+        z-index: 1000;
+        color: #fff;
+        line-height: 20px;
+    }
+    .badge-blue{
+        background: #4CB5FC;
+    }
+    .badge-yellow{
+        background: #FCB64E;
+    }
+    .badge-red{
+        background: #e88687;
+    }
+    .badge-name i{
+        padding:10px;
+        font-style: normal;
+        font-weight: bolder;
+    }
+    .badge-del i, .badge-add i{
+        margin-top: 2px;
+    }
+    /* .conditions-waiting:hover{
+        border:1px solid #e4393c;
+    } */
+    .badge-del:hover{
+        background: #e4393c;
+    }
+    .conditions-selected:hover{
+        border:1px solid #5cb85c;
+    }
+    .badge-add:hover{
+        background: #5cb85c;
+    }
+    .selected-contain{
+        position: relative;
+        background: #ffffff;
+        -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        color: #555555;
+        height: 17%;
+    }
+    .waiting-contain{
+        position: relative;
+        background: #ffffff;
+        -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        color: #555555;
+        padding: 0 0 0 10px;
+        height: 63%;
+        width: 100%;
+    }
+    .select-header{
+        position: relative;
+        background: #ffffff;
+        -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        color: #555555;
+        padding: 20px;
+        height: 10%;
+    }
+    .select-body{
+        border:1px solid #E2E2E2;
+        height:100%;
+        width:100%;
+    }
+    /* .select-left{
+        width:10%;
+        height:100%;
+    } */
+    .waiting-select{
+        overflow-x: hidden;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    .selected{
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    .select-right{
+        height:100%;
+    }
+    .waiting-ul{
+        height: 100%;
+        padding: 10px 5px 15px 30px;
+    }
+    .select-ul{
+        overflow-x: hidden;
+        height: 100%;
+        padding: 10px 5px 10px 30px;
+    }
+    .row{
+        height: 100%;
+    }
+    .col-md-2{
+        width: 15%;
+    }
+    .selected-footer{
+        text-align: center;
+        padding: 10px;
+    }
+    .container-fluid{
+        padding-top:15px;
+    }
+    .col-md-3 button{
+        padding: 3px 12px;
+    }
+</style>
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/bootstrap.min.js"></script>    
+    <script type="text/javascript" src="./jquery-ui-1.12.1/jquery-ui-1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="./json.js"></script>
+    <!-- <script type="text/javascript" src="./jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxlistbox.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxdropdownlist.js"></script> -->
+    <script type="text/javascript" src="./jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxsplitter.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxlistbox.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxdata.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxcombobox.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqxinput.js"></script>
+
+    <script>
+    $( function() {
+        // 构造输入框
+        // varcountries=newArray("Afghanistan",
+        //     "Albania",
+        //     "Algeria",
+        //     "Andorra",
+        // );
+        // $("#accordingToInput").jqxInput({placeHolder: "Enter a Country", height: 25, width: 200, minLength: 1,  source: countries });
+        $("#accordingToInput").jqxInput({placeHolder: "请输入属性", height: 25, width: 200, minLength: 1,  });
+        // 构造多选下拉
+        var source = [
+                    "属性1",
+                    "属性2",
+                    "属性3",
+                    "属性4",
+                    "属性5"
+		        ];
+        $("#accordingToCheckbox").jqxComboBox({ checkboxes: true,source: source, theme: 'light', placeHolder: '请选择属性', width: '200', height: '25'});
+        // 拖动排序
+        $( "#selecteList" ).sortable({
+                connectWith: ".conditions-waiting"
+        }).disableSelection();
+        structureConditionList();
+        // 构造已选列表
+        $(".conditions-waiting").on("click",function(){
+            var _selectListHtml="";
+            var i = $(this).index();//当前索引值
+            var eConditionId = $(this).attr("conditionId");
+            var eConditionLable = $(this).attr("conditionLable");
+            _selectListHtml+="<li class='conditions-waiting col-md-2 col-sm-2 col-xs-12'>"
+                            +eConditionLable 
+                            +"<span class='badge-del' onclick='xxxxx(this);' ><i class='glyphicon glyphicon-remove'></i></span>"
+                            +"</li>"
+           
+            
+           
+            $("#selecteList").append( $(_selectListHtml));
+           
+        });
+    });
+
+    function xxxxx(temp){
+        $(temp).on("click",function(){
+                $(this).parent().remove();
+            });
+    }
+    // 构造待选列表
+    function structureConditionList(){
+        var conditionId;
+        var conditionLable;
+        var conditionExplain;
+        var _conditionHtml="";
+        for(var o in conditionItem){  
+            conditionId=conditionItem[o].id;
+            conditionLable=conditionItem[o].lable;
+            conditionExplain=conditionItem[o].explain;
+            console.log(conditionItem[o].id);
+            _conditionHtml+="<li class='conditions-waiting col-md-2 col-sm-2 col-xs-12' conditionId="+conditionId+" conditionLable="+conditionLable+">"
+                            +conditionLable 
+                            +"<span class='badge-add'><i class='glyphicon glyphicon-ok'></i></span>"
+                            +"</li>"
+        }  
+        $("#conditionsList").html(_conditionHtml);
+    }
+  </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="selected-contain">
+            <span class="badge-name badge-red"><i>已选条件排序</i></span>
+            <div class="selected">
+                <ul id="selecteList" class="select-ul">
+                    <!-- <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li>
+                    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+                        jkldjsidfjsd 
+                        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+                    </li> -->
+                </ul>  
+            </div>
+        </div>
+        <div class="select-header">
+            <span class="badge-name badge-yellow"><i>类型选择</i></span>                
+            <div class="col-md-3 col-sm-4 col-xs-12">
+                <input type="text" id="accordingToInput"/>
+            </div>  
+            <div class="col-md-3 col-sm-4 col-xs-12">
+                <div id="accordingToCheckbox">
+                </div>  
+            </div>  
+            <div class="col-md-3 col-sm-4 col-xs-12" style="float:right;text-align: right;">
+                <button type="button" class="btn btn-default">确定</button>                    
+            </div> 
+        </div>
+        <div class="waiting-contain">
+            <span class="badge-name badge-blue"><i>待选条件</i></span>   
+            <div class="waiting-select">       
+                <div class="row">
+                    <div class="select-right">
+                        <ul id="conditionsList" class="waiting-ul">
+                        </ul>
+                    </div>
+                </div>
+            </div>      
+        </div>
+        <div class="selected-footer">
+            <button type="button" class="btn btn-default">确定</button>
+            <button type="button" class="btn btn-primary">预览</button>
+        </div>
+    </div>
+<!--     
+<ul id="sortable1" class="connectedSortable">
+    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+        jkldjsidfjsd 
+    </li>
+    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+        jkldjsidfjsd 
+    </li>
+    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+        jkldjsidfjsd 
+    </li>
+    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+        jkldjsidfjsd 
+    </li>
+    <li class="conditions-selected col-md-2 col-sm-2 col-xs-12">
+        jkldjsidfjsd 
+        <span class="badge-add"><i class="glyphicon glyphicon-ok"></i></span>
+    </li>
+    <li class="conditions-waiting col-md-2 col-sm-2 col-xs-12">
+        jkldjsidfjsd 
+        <span class="badge-del"><i class="glyphicon glyphicon-remove"></i></span>
+    </li>
+</ul>
+ 
+<ul id="sortable2" class="connectedSortable">
+  <li class="ui-state-highlight col-md-3 col-sm-4 col-xs-6">Item 1</li>
+  <li class="ui-state-highlight col-md-3 col-sm-4 col-xs-6">Item 2</li>
+  <li class="ui-state-highlight col-md-3 col-sm-4 col-xs-6">Item 3</li>
+  <li class="ui-state-highlight col-md-3 col-sm-4 col-xs-6">Item 4</li>
+  <li class="ui-state-highlight col-md-3 col-sm-4 col-xs-6">Item 5</li>
+</ul> -->
+ 
+ 
+</body>
+</html>
